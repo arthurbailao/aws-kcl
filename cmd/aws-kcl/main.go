@@ -10,10 +10,10 @@ import (
 const daemonClass = "com.amazonaws.services.kinesis.multilang.MultiLangDaemon"
 
 func main() {
-	args := ParseArgs()
-	jars := Download(args)
+	args := parseArgs()
+	jars := download(args)
 
-	paths := append(jars, AbsDir(os.Args[0]), AbsDir(args.Properties))
+	paths := append(jars, absDir(os.Args[0]), absDir(args.Properties))
 	classpath := strings.Join(paths, string(os.PathListSeparator))
 
 	var cmd = []string{
