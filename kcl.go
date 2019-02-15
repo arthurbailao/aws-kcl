@@ -10,7 +10,7 @@ func Run(processor RecordProcessor) {
 	checkpointer := &Checkpointer{}
 
 	for {
-		msg := ReadMessage()
+		msg := readMessage()
 
 		if msg == nil {
 			break
@@ -43,6 +43,6 @@ func Run(processor RecordProcessor) {
 			os.Exit(1)
 		}
 
-		WriteStatus(msg.Action)
+		writeStatus(msg.Action)
 	}
 }

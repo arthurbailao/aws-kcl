@@ -9,8 +9,7 @@ import (
 	"os"
 )
 
-// Message ...
-type Message struct {
+type message struct {
 	Action  string    `json:"action"`
 	ShardID *string   `json:"shardId"`
 	Records []*Record `json:"records"`
@@ -36,8 +35,7 @@ const (
 	ZombieShutdown
 )
 
-// ReadMessage ...
-func ReadMessage() *Message {
+func readMessage() *message {
 	bio := bufio.NewReader(os.Stdin)
 	var buffer bytes.Buffer
 	for {
@@ -54,7 +52,7 @@ func ReadMessage() *Message {
 		}
 	}
 
-	var msg Message
+	var msg message
 	err := json.Unmarshal(buffer.Bytes(), &msg)
 	if err != nil {
 		panic("Failed to unmarshal json message " + err.Error())
@@ -62,8 +60,7 @@ func ReadMessage() *Message {
 	return &msg
 }
 
-// WriteStatus ...
-func WriteStatus(action string) {
+func writeStatus(action string) {
 	s := status{"status", action}
 	str, err := json.Marshal(s)
 	if err != nil {
