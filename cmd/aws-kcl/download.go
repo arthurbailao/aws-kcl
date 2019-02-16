@@ -11,7 +11,7 @@ import (
 )
 
 // Download ...
-func Download(args *CliArgs) []string {
+func download(args *cliArgs) []string {
 	filenames := make([]string, len(packages))
 	for i, pkg := range packages {
 		filename := path.Join(args.JarPath, pkg.Name())

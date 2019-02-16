@@ -7,8 +7,7 @@ import (
 	"path/filepath"
 )
 
-// CliArgs ...
-type CliArgs struct {
+type cliArgs struct {
 	Properties string
 	Java       string
 	JarPath    string
@@ -20,9 +19,8 @@ const (
 	jarPathUsage    = "path where all multi-language daemon jar files will be downloaded (optional)"
 )
 
-// ParseArgs ...
-func ParseArgs() *CliArgs {
-	args := new(CliArgs)
+func parseArgs() *cliArgs {
+	args := new(cliArgs)
 	flag.StringVar(&args.Properties, "properties", "", propertiesUsage)
 	flag.StringVar(&args.Java, "java", javaPath(), javaUsage)
 	flag.StringVar(&args.JarPath, "jar_path", "", jarPathUsage)
@@ -40,8 +38,7 @@ func ParseArgs() *CliArgs {
 	return args
 }
 
-// AbsDir ...
-func AbsDir(path string) string {
+func absDir(path string) string {
 	dir, err := filepath.Abs(filepath.Dir(path))
 	if err != nil {
 		panic(err)
@@ -58,7 +55,7 @@ func javaPath() string {
 }
 
 func jarPath() string {
-	p := path.Join(AbsDir(os.Args[0]), "lib", "jar")
+	p := path.Join(absDir(os.Args[0]), "lib", "jar")
 	err := os.MkdirAll(p, os.ModePerm)
 	if err != nil {
 		panic(err)
