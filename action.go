@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 )
 
 type message struct {
@@ -35,17 +34,18 @@ const (
 	ZombieShutdown
 )
 
-func readMessage() *message {
-	bio := bufio.NewReader(os.Stdin)
+func readMessage(stream io.Reader) (*message, error) {
+	bio := bufio.NewReader(stream)
 	var buffer bytes.Buffer
 	for {
 		line, more, err := bio.ReadLine()
 		if err == io.EOF {
-			return nil
+			return nil, nil
 		}
 		if err != nil {
-			panic("Unable to read line from stdin " + err.Error())
+			return nil, fmt.Errorf("unable to read line from stdin: " + err.Error())
 		}
+
 		buffer.Write(line)
 		if more == false {
 			break
@@ -55,9 +55,10 @@ func readMessage() *message {
 	var msg message
 	err := json.Unmarshal(buffer.Bytes(), &msg)
 	if err != nil {
-		panic("Failed to unmarshal json message " + err.Error())
+		return nil, fmt.Errorf("failed to unmarshal json message: " + err.Error())
 	}
-	return &msg
+
+	return &msg, nil
 }
 
 func writeStatus(action string) {

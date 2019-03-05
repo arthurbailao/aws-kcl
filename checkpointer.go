@@ -26,8 +26,10 @@ func (cp *Checkpointer) Checkpoint(sequenceNumber *string) error {
 
 	fmt.Printf("\n%s\n", str)
 
-	msg := readMessage()
-	if msg == nil {
+	msg, err := readMessage(os.Stdin)
+	if err != nil {
+		panic(err)
+	} else if msg == nil {
 		fmt.Fprintf(os.Stderr, "Received EOF rather than checkpoint ack\n")
 		os.Exit(1)
 	} else if msg.Action != "checkpoint" {
