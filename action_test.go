@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -25,15 +26,11 @@ func (r EofReader) Read(b []byte) (int, error) {
 	return 0, io.EOF
 }
 
-func strP(str string) *string {
-	return &str
-}
-
 func TestReadMessage(t *testing.T) {
 	t.Run("Should parse JSON messages correctly", func(t *testing.T) {
 		fakeMsg := message{
 			Action:  "FakeAction",
-			ShardID: strP("FakeShardID"),
+			ShardID: aws.String("FakeShardID"),
 			Records: []*Record{
 				&Record{
 					Data:           "FakeData",
@@ -41,8 +38,8 @@ func TestReadMessage(t *testing.T) {
 					SequenceNumber: "FakeSequenceNumber",
 				},
 			},
-			Reason: strP("FakeReason"),
-			Error:  strP("FakeError"),
+			Reason: aws.String("FakeReason"),
+			Error:  aws.String("FakeError"),
 		}
 		rawMsg, _ := json.Marshal(fakeMsg)
 
