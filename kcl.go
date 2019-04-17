@@ -10,28 +10,31 @@ func Run(processor RecordProcessor) {
 	checkpointer := &Checkpointer{}
 
 	for {
-		msg := readMessage()
+		var err error
 
+		msg, err := readMessage(os.Stdin)
+		if err != nil {
+			panic(err)
+		}
 		if msg == nil {
 			break
 		}
 
-		var err error
-		switch {
-		case msg.Action == "processRecords":
+		switch msg.Action {
+		case "processRecords":
 			err = processor.ProcessRecords(msg.Records, checkpointer)
 
-		case msg.Action == "initialize":
+		case "initialize":
 			err = processor.Initialize(*msg.ShardID)
 
-		case msg.Action == "shutdown":
+		case "shutdown":
 			shutdownType := GracefulShutdown
 			if msg.Reason == nil || *msg.Reason == "ZOMBIE" {
 				shutdownType = ZombieShutdown
 			}
 			err = processor.Shutdown(shutdownType, checkpointer)
 
-		case msg.Action == "shutdownRequested":
+		case "shutdownRequested":
 			err = processor.ShutdownRequested(checkpointer)
 
 		default:
