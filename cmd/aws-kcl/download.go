@@ -6,7 +6,9 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
+	"github.com/cenkalti/backoff"
 	getter "github.com/hashicorp/go-getter"
 )
 
@@ -27,20 +29,18 @@ func download(args *cliArgs) []string {
 }
 
 func downloadFile(dst string, src string) {
-	retryTimes := 5
 
-	var err error
-	for retryTimes > 0 {
-		err = getter.GetFile(dst, src)
-		if err != nil {
-			retryTimes--
-			continue
-		}
-		break
-	}
+	b := backoff.NewExponentialBackOff()
+	b.InitialInterval = 200 * time.Millisecond
+	b.MaxElapsedTime = 1 * time.Minute
 
-	if retryTimes == 0 && err != nil {
-		panic(err)
+	err := backoff.Retry(func() error {
+		er := getter.GetFile(dst, src)
+		return er
+	}, b)
+
+	if err != nil {
+		panic("failed to download jar files")
 	}
 }
 
