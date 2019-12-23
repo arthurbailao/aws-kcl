@@ -27,8 +27,19 @@ func download(args *cliArgs) []string {
 }
 
 func downloadFile(dst string, src string) {
-	err := getter.GetFile(dst, src)
-	if err != nil {
+	retryTimes := 5
+
+	var err error
+	for retryTimes > 0 {
+		err = getter.GetFile(dst, src)
+		if err != nil {
+			retryTimes--
+			continue
+		}
+		break
+	}
+
+	if retryTimes == 0 && err != nil {
 		panic(err)
 	}
 }
