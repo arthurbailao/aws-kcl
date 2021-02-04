@@ -49,14 +49,14 @@ func (ec *WriteToFile) ShutdownRequested(checkpointer *kcl.Checkpointer) error {
 	return checkpointer.Checkpoint(nil)
 }
 
-// Shutdown makes the last checkpoint
-func (ec *WriteToFile) Shutdown(shutdownType kcl.ShutdownType, checkpointer *kcl.Checkpointer) error {
-	if shutdownType == kcl.GracefulShutdown {
-		if err := checkpointer.Checkpoint(nil); err != nil {
-			return err
-		}
-	}
+func (ec *WriteToFile) LeaseLost() error {
+	fmt.Fprintln(ec.outfile, "leaseLost")
 	return nil
+}
+
+func (ec *WriteToFile) ShardEnded(checkpointer *kcl.Checkpointer) error {
+	fmt.Fprintln(ec.outfile, "shardEnded")
+	return checkpointer.Checkpoint(nil)
 }
 
 func main() {

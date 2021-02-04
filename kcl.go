@@ -24,12 +24,11 @@ func Run(processor RecordProcessor) {
 		case msg.Action == "initialize":
 			err = processor.Initialize(*msg.ShardID)
 
-		case msg.Action == "shutdown":
-			shutdownType := GracefulShutdown
-			if msg.Reason == nil || *msg.Reason == "ZOMBIE" {
-				shutdownType = ZombieShutdown
-			}
-			err = processor.Shutdown(shutdownType, checkpointer)
+		case msg.Action == "leaseLost":
+			err = processor.LeaseLost()
+
+		case msg.Action == "shardEnded":
+			err = processor.ShardEnded(checkpointer)
 
 		case msg.Action == "shutdownRequested":
 			err = processor.ShutdownRequested(checkpointer)

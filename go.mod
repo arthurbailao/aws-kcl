@@ -1,5 +1,7 @@
 module github.com/arthurbailao/aws-kcl
 
+go 1.15
+
 require (
 	github.com/aws/aws-sdk-go v1.15.72 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
