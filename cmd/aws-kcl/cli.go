@@ -11,12 +11,14 @@ type cliArgs struct {
 	Properties string
 	Java       string
 	JarPath    string
+	PomPath    string
 }
 
 const (
 	propertiesUsage = "properties file with multi-language daemon options"
 	javaUsage       = "path to java executable - defaults to using JAVA_HOME environment variable to get java path"
 	jarPathUsage    = "path where all multi-language daemon jar files will be downloaded (optional)"
+	pomUsage        = "path to the pom.xml file (optional)"
 )
 
 func parseArgs() *cliArgs {
@@ -24,6 +26,7 @@ func parseArgs() *cliArgs {
 	flag.StringVar(&args.Properties, "properties", "", propertiesUsage)
 	flag.StringVar(&args.Java, "java", javaPath(), javaUsage)
 	flag.StringVar(&args.JarPath, "jar_path", "", jarPathUsage)
+	flag.StringVar(&args.PomPath, "pom", "pom.xml", pomUsage)
 	flag.Parse()
 
 	if len(args.Properties) == 0 || len(args.Java) == 0 {
