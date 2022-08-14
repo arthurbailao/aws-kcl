@@ -19,14 +19,14 @@ type checkpoint struct {
 func (cp *Checkpointer) Checkpoint(sequenceNumber *string) error {
 	c := checkpoint{"checkpoint", sequenceNumber}
 
-	str, err := json.Marshal(c)
+	b, err := json.Marshal(c)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("\n%s\n", str)
+	printf("\n%s\n", string(b))
 
-	msg := readMessage()
+	msg := readMessage(os.Stdin)
 	if msg == nil {
 		fmt.Fprintf(os.Stderr, "Received EOF rather than checkpoint ack\n")
 		os.Exit(1)
