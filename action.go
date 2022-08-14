@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 )
 
 type message struct {
@@ -35,8 +34,10 @@ const (
 	ZombieShutdown
 )
 
-func readMessage() *message {
-	bio := bufio.NewReader(os.Stdin)
+var printf = fmt.Printf
+
+func readMessage(rd io.Reader) *message {
+	bio := bufio.NewReader(rd)
 	var buffer bytes.Buffer
 	for {
 		line, more, err := bio.ReadLine()
@@ -62,10 +63,10 @@ func readMessage() *message {
 
 func writeStatus(action string) {
 	s := status{"status", action}
-	str, err := json.Marshal(s)
+	b, err := json.Marshal(s)
 	if err != nil {
 		panic("Failed to marshal status as json " + err.Error())
 	}
 
-	fmt.Printf("\n%s\n", str)
+	printf("\n%s\n", string(b))
 }
