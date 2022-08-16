@@ -1,83 +1,119 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"strings"
-	"time"
-
-	"github.com/cenkalti/backoff"
-	getter "github.com/hashicorp/go-getter"
 )
+
+type xmlMap map[string]string
+
+type xmlMapEntry struct {
+	XMLName xml.Name
+	Value   string `xml:",chardata"`
+}
+
+// UnmarshalXML unmarshals the XML into a map of string to strings,
+// creating a key in the map for each tag and setting it's value to the
+// tags contents.
+//
+// The fact this function is on the pointer of Map is important, so that
+// if m is nil it can be initialized, which is often the case if m is
+// nested in another xml structurel. This is also why the first thing done
+// on the first line is initialize it.
+// source: https://go.dev/play/p/4Z2C-GF0E7
+func (m *xmlMap) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	*m = xmlMap{}
+	for {
+		var e xmlMapEntry
+
+		err := d.Decode(&e)
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		}
+
+		(*m)[fmt.Sprintf("${%s}", e.XMLName.Local)] = e.Value
+	}
+	return nil
+}
+
+type Dependency struct {
+	Group    string `xml:"groupId"`
+	Artifact string `xml:"artifactId"`
+	Version  string `xml:"version"`
+}
+
+func (d Dependency) URL(properties xmlMap) string {
+	paths := strings.Split(d.Group, ".")
+	paths = append(paths, d.Artifact, d.CommonVersion(properties), d.Name(properties))
+	return "https://repo1.maven.org/maven2/" + strings.Join(paths, "/")
+}
+
+func (d Dependency) Name(properties xmlMap) string {
+	return fmt.Sprintf("%s-%s.jar", d.Artifact, d.CommonVersion(properties))
+}
+
+func (d Dependency) CommonVersion(p xmlMap) string {
+	if v, ok := p[d.Version]; ok {
+		return v
+	}
+	return d.Version
+}
+
+type Project struct {
+	XMLName      xml.Name     `xml:"project"`
+	Properties   xmlMap       `xml:"properties"`
+	Dependencies []Dependency `xml:"dependencies>dependency"`
+}
 
 // Download ...
 func download(args *cliArgs) []string {
-	filenames := make([]string, len(packages))
-	for i, pkg := range packages {
-		filename := path.Join(args.JarPath, pkg.Name())
+	data, err := os.ReadFile(args.PomPath)
+	if err != nil {
+		panic("failed to read pom.xml content")
+	}
 
+	p := Project{}
+	err = xml.Unmarshal(data, &p)
+	if err != nil {
+		panic("failed to unmarshal pom.xml")
+	}
+
+	var filenames []string
+	for _, d := range p.Dependencies {
+		filename := path.Join(args.JarPath, d.Name(p.Properties))
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
-			downloadFile(filename, pkg.URL())
+			downloadFile(filename, d.URL(p.Properties))
 		}
-
-		filenames[i] = filename
+		filenames = append(filenames, filename)
 		log.Printf("%s downloaded", filename)
 	}
+
 	return filenames
 }
 
 func downloadFile(dst string, src string) {
-
-	b := backoff.NewExponentialBackOff()
-	b.InitialInterval = 200 * time.Millisecond
-	b.MaxElapsedTime = 1 * time.Minute
-
-	err := backoff.Retry(func() error {
-		er := getter.GetFile(dst, src)
-		return er
-	}, b)
-
+	out, err := os.Create(dst)
 	if err != nil {
-		panic("failed to download jar files")
+		panic("failed to create jar file")
 	}
-}
+	defer out.Close()
 
-type mavenPackageInfo struct {
-	Group    string
-	Artifact string
-	Version  string
-}
+	resp, err := http.Get(src)
+	if err != nil {
+		panic("error requesting jar file")
+	}
+	defer resp.Body.Close()
 
-func (pkg *mavenPackageInfo) URL() string {
-	paths := strings.Split(pkg.Group, ".")
-	paths = append(paths, pkg.Artifact, pkg.Version, pkg.Name())
-	return "http://search.maven.org/remotecontent?filepath=" + strings.Join(paths, "/")
-}
-
-func (pkg *mavenPackageInfo) Name() string {
-	return fmt.Sprintf("%s-%s.jar", pkg.Artifact, pkg.Version)
-}
-
-var packages = [...]mavenPackageInfo{
-	{"commons-codec", "commons-codec", "1.9"},
-	{"commons-logging", "commons-logging", "1.1.3"},
-	{"commons-lang", "commons-lang", "2.6"},
-	{"joda-time", "joda-time", "2.8.1"},
-	{"com.amazonaws", "aws-java-sdk-core", "1.11.331"},
-	{"com.amazonaws", "aws-java-sdk-cloudwatch", "1.11.331"},
-	{"com.amazonaws", "aws-java-sdk-dynamodb", "1.11.331"},
-	{"com.amazonaws", "aws-java-sdk-kinesis", "1.11.331"},
-	{"com.amazonaws", "aws-java-sdk-kms", "1.11.331"},
-	{"com.amazonaws", "aws-java-sdk-s3", "1.11.331"},
-	{"com.amazonaws", "amazon-kinesis-client", "1.9.1"},
-	{"com.fasterxml.jackson.core", "jackson-databind", "2.6.6"},
-	{"com.fasterxml.jackson.core", "jackson-core", "2.6.6"},
-	{"com.fasterxml.jackson.core", "jackson-annotations", "2.6.0"},
-	{"com.fasterxml.jackson.dataformat", "jackson-dataformat-cbor", "2.6.6"},
-	{"org.apache.httpcomponents", "httpclient", "4.5.2"},
-	{"org.apache.httpcomponents", "httpcore", "4.4.4"},
-	{"com.google.guava", "guava", "18.0"},
-	{"com.google.protobuf", "protobuf-java", "2.6.1"},
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		panic("failed to download jar")
+	}
 }

@@ -7,7 +7,7 @@ import (
 	"syscall"
 )
 
-const daemonClass = "com.amazonaws.services.kinesis.multilang.MultiLangDaemon"
+const daemonClass = "software.amazon.kinesis.multilang.MultiLangDaemon"
 
 func main() {
 	args := parseArgs()
