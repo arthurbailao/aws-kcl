@@ -48,7 +48,9 @@ jobs:
     - name: Starting Subscriber
       run: |
         ./aws-kcl -properties sample/development.properties &
-        echo "subscriberPID=$!" >> $GITHUB_ENV
+        pid=$!
+        echo "subscriberPID=$pid" >> $GITHUB_ENV
+
 
     - name: Publishing messages
       run: |
@@ -61,7 +63,5 @@ jobs:
     - name: Collect results
       run: |
         kill -15 $subscriberPID
-        wait $subscriberPID
-        status=$?
-        echo "The exit status of the process was $status"
+        sleep 10
         tail -n3 /tmp/shardId-00000000000*
