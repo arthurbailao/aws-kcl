@@ -6,6 +6,8 @@ jobs:
     env:
       streamName: aws-kcl-go-sample
       AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: keyid
+      AWS_SECRET_KEY: keysecret
     steps:
     - uses: actions/checkout@v3
 
