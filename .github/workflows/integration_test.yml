@@ -56,4 +56,12 @@ jobs:
         awslocal kinesis put-record --stream-name $streamName --data $data --partition-key sharda
         awslocal kinesis put-record --stream-name $streamName --data $data --partition-key shardb
 
-    - run: sleep 120
+    - run: sleep 120 # TODO: should wait for processed record
+
+    - name: Collect results
+      run: |
+        kill -15 $subscriberPID
+        wait $subscriberPID
+        status=$?
+        echo "The exit status of the process was $status"
+        tail -n3 /tmp/shardId-00000000000*
