@@ -38,4 +38,17 @@ jobs:
         echo "retrievalMode=POLLING" >> sample/development.properties
 
     - name: Creating Kinesis Stream
-      run: awslocal kinesis create-stream --shard-count 2 --stream-name aws-kcl-go-sample
+      run: | 
+        streamName="aws-kcl-go-sample"
+        awslocal kinesis create-stream --shard-count 2 --stream-name $streamName
+
+    - name: Starting Subscriber
+      run: ./aws-kcl -properties sample/development.properties &
+
+    - name: Publishing messages
+      run: |
+        data=$(echo -n '{"message":"sample"}' | base64 -w0)
+        awslocal kinesis put-record --stream-name $streamName --data $data --partition-key sharda
+        awslocal kinesis put-record --stream-name $streamName --data $data --partition-key shardb
+
+    - run: sleep 120
