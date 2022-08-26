@@ -1,0 +1,24 @@
+on: [push]
+name: Integration test
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Start LocalStack
+        run: |
+          # install LocalStack cli and awslocal
+          pip install localstack awscli-local[ver1]
+          # Make sure to pull the latest version of the image
+          docker pull localstack/localstack
+          # Start LocalStack in the background
+          localstack start -d
+          # Wait 30 seconds for the LocalStack container to become ready before timing out
+          echo "Waiting for LocalStack startup..."
+          localstack wait -t 30
+          echo "Startup complete" 
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '>=1.18'
+    - run: go version
+    - run: go build ./...
