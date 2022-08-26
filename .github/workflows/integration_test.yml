@@ -6,7 +6,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Start LocalStack
-        run: |
+      run: |
           # install LocalStack cli and awslocal
           pip install localstack awscli-local[ver1]
           # Make sure to pull the latest version of the image
