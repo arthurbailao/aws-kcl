@@ -10,7 +10,8 @@ import (
 
 // WriteToFile implements aws-kcl RecordProcessor interface
 type WriteToFile struct {
-	outfile *os.File
+	outfile               *os.File
+	currentSequenceNumber *string
 }
 
 // Initialize open the  output file
@@ -22,31 +23,30 @@ func (ec *WriteToFile) Initialize(shardID string) error {
 		return err
 	}
 
-	fmt.Fprintf(ec.outfile, "init: %s\n", shardID)
+	fmt.Fprintln(ec.outfile, `{"action": "initialize"}`)
+
 	return nil
 }
 
 // ProcessRecords writes decoded data to file
 func (ec *WriteToFile) ProcessRecords(records []*kcl.Record, checkpointer *kcl.Checkpointer) error {
-
-	var sn string
 	for i := range records {
 		decoded, err := base64.StdEncoding.DecodeString(records[i].Data)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(ec.outfile, "process: %s\n", decoded)
-		sn = records[i].SequenceNumber
+		fmt.Fprintln(ec.outfile, string(decoded))
+		ec.currentSequenceNumber = &records[i].SequenceNumber
 	}
 
-	return checkpointer.Checkpoint(&sn)
+	return checkpointer.Checkpoint(ec.currentSequenceNumber)
 }
 
 // ShutdownRequested closes the file
 func (ec *WriteToFile) ShutdownRequested(checkpointer *kcl.Checkpointer) error {
-	fmt.Fprintln(ec.outfile, "shutdown")
+	fmt.Fprintln(ec.outfile, `{"action": "shutdownRequested"}`)
 	ec.outfile.Close()
-	return checkpointer.Checkpoint(nil)
+	return checkpointer.Checkpoint(ec.currentSequenceNumber)
 }
 
 func (ec *WriteToFile) LeaseLost() error {
@@ -55,7 +55,9 @@ func (ec *WriteToFile) LeaseLost() error {
 
 // Shutdown makes the last checkpoint
 func (ec *WriteToFile) ShardEnded(checkpointer *kcl.Checkpointer) error {
-	return checkpointer.Checkpoint(nil)
+	fmt.Fprintln(ec.outfile, `{"action": "shardEnded"}`)
+	ec.outfile.Close()
+	return checkpointer.Checkpoint(ec.currentSequenceNumber)
 }
 
 func main() {
