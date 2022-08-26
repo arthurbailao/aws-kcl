@@ -3,6 +3,8 @@ name: Integration test
 jobs:
   integration-test:
     runs-on: ubuntu-latest
+    env:
+      streamName: aws-kcl-go-sample
     steps:
     - uses: actions/checkout@v3
 
@@ -38,12 +40,12 @@ jobs:
         echo "retrievalMode=POLLING" >> sample/development.properties
 
     - name: Creating Kinesis Stream
-      run: | 
-        streamName="aws-kcl-go-sample"
-        awslocal kinesis create-stream --shard-count 2 --stream-name $streamName
+      run: awslocal kinesis create-stream --shard-count 2 --stream-name $streamName
 
     - name: Starting Subscriber
-      run: ./aws-kcl -properties sample/development.properties &
+      run: |
+        ./aws-kcl -properties sample/development.properties &
+        echo "subscriberPID=$!" >> $GITHUB_ENV
 
     - name: Publishing messages
       run: |
