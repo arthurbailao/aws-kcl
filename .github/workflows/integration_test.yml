@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       streamName: aws-kcl-go-sample
+      AWS_REGION: us-east-1
     steps:
     - uses: actions/checkout@v3
 
