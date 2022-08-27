@@ -11,6 +11,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install Dependencias
+      run: |
+        sudo apt update
+        sudo apt install -y jq
+
     - name: Start LocalStack
       run: |
           # install LocalStack cli and awslocal
@@ -49,7 +54,7 @@ jobs:
 
     - name: Publishing messages
       run: |
-        data='{"message":"sample"}'
+        data='{"action":"processRecords"}'
         awslocal kinesis put-record --stream-name $streamName --data $data --partition-key sharda
         awslocal kinesis put-record --stream-name $streamName --data $data --partition-key shardb
 
@@ -60,8 +65,12 @@ jobs:
         echo "subscriberPID=$pid" >> $GITHUB_ENV
         sleep 120 # TODO: should wait for processed record
 
-    - name: Collect results
+    - name: Assert results
       run: |
         kill -15 $subscriberPID
         sleep 10
         tail -n3 /tmp/shardId-00000000000*
+        if test $(cat /tmp/shardId-00000000000* | jq -s 'group_by(.action)[] | length' | tr -d '\n') -ne 222; then
+          echo "FAIL"
+          exit 1
+        fi
