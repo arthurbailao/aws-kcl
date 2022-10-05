@@ -13,6 +13,8 @@ jobs:
 
     - name: Start LocalStack
       run: |
+          # https://docs.localstack.cloud/ci/github-actions/#installations-fails-with-attributeerror-module-lib-has-no-attribute-x509_v_flag_cb_issuer_check
+          pip install --upgrade pyopenssl
           # install LocalStack cli and awslocal
           pip install localstack awscli-local[ver1]
           # Make sure to pull the latest version of the image
