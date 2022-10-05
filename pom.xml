@@ -4,12 +4,12 @@
     <properties>
         <awssdk.version>2.17.263</awssdk.version>
         <aws-java-sdk.version>1.12.130</aws-java-sdk.version>
-        <netty.version>4.1.80.Final</netty.version>
+        <netty.version>4.1.82.Final</netty.version>
         <netty-reactive.version>2.0.5</netty-reactive.version>
         <fasterxml-jackson.version>2.13.3</fasterxml-jackson.version>
         <logback.version>1.2.10</logback.version>
         <amazon-kinesis-client.version>2.4.2</amazon-kinesis-client.version>
-        <gsr.version>1.1.9</gsr.version>
+        <gsr.version>1.1.12</gsr.version>
     </properties>
     <dependencies>
         <dependency>
