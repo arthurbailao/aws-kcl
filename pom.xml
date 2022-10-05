@@ -9,7 +9,7 @@
         <fasterxml-jackson.version>2.13.3</fasterxml-jackson.version>
         <logback.version>1.2.10</logback.version>
         <amazon-kinesis-client.version>2.4.2</amazon-kinesis-client.version>
-        <gsr.version>1.1.9</gsr.version>
+        <gsr.version>1.1.12</gsr.version>
     </properties>
     <dependencies>
         <dependency>
