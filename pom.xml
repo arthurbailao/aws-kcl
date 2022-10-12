@@ -8,7 +8,7 @@
         <netty-reactive.version>2.0.5</netty-reactive.version>
         <fasterxml-jackson.version>2.13.4</fasterxml-jackson.version>
         <logback.version>1.2.10</logback.version>
-        <amazon-kinesis-client.version>2.4.2</amazon-kinesis-client.version>
+        <amazon-kinesis-client.version>2.4.3</amazon-kinesis-client.version>
         <gsr.version>1.1.12</gsr.version>
     </properties>
     <dependencies>
