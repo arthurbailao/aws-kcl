@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  localstack:
+    container_name: aws-kcl-localstack
+    image: localstack/localstack
+
+  create-kinesis-stream:
+    container_name: create-kinesis-stream
+    image: localstack/localstack
+    depends_on:
+      - localstack
+    entrypoint: >
+      awslocal 
+        --endpoint-url=http://localstack:4566 
+        kinesis 
+        create-stream 
+        --shard-count 2 
+        --stream-name aws-kcl-go-sample
+
+  subscriber:
+    container_name: aws-kinesis-subscriber
+    build: .
+    depends_on:
+      - create-kinesis-stream
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=keyid
+      - AWS_SECRET_KEY=keysecret
+ 
+    entrypoint: >
+      /bin/sh -c '
+        cd /home/nonroot &&
+        echo "shutdownGraceMillis = 10000" >> development.properties &&
+        echo "dynamoDBEndpoint = http://localstack:4566" >> development.properties &&
+        echo "kinesisEndpoint = http://localstack:4566" >> development.properties &&
+        echo "metricsLevel = NONE" >> development.properties &&
+        echo "retrievalMode=POLLING" >> development.properties &&
+        exec aws-kcl -java /usr/bin/java -properties development.properties
+      '
+
