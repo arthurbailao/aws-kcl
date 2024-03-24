@@ -1,4 +1,6 @@
 # Amazon Kinesis Client Library for Go
+[![Integration test](https://github.com/arthurbailao/aws-kcl/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/arthurbailao/aws-kcl/actions/workflows/integration_test.yml)
+
 This package provides an interface to the [Amazon Kinesis Client Library][amazon-kcl] (KCL) [MultiLangDaemon][multi-lang-daemon] for Golang.
 
 Developers can use the KCL to build distributed applications that process streaming data reliably at scale. The KCL takes care of many of the complex tasks associated with distributed computing, such as load-balancing across multiple instances, responding to instance failures, checkpointing processed records and reacting to changes in stream volume.
