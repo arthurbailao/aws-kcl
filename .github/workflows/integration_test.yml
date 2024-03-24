@@ -34,6 +34,7 @@ jobs:
         echo "kinesisEndpoint = http://localhost:4566" >> sample/development.properties
         echo "metricsLevel = NONE" >> sample/development.properties
         echo "retrievalMode=POLLING" >> sample/development.properties
+        echo "shardSyncIntervalMillis = 10000" >> sample/development.properties
 
     - name: Creating Kinesis Stream
       run: |
