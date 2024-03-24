@@ -52,7 +52,7 @@ jobs:
         ./aws-kcl -properties sample/development.properties &
         pid=$!
         echo "subscriberPID=$pid" >> $GITHUB_ENV
-        sleep 120 # TODO: should wait for processed record
+        sleep 90 # TODO: should wait for processed record
 
     - name: Assert results
       run: |
