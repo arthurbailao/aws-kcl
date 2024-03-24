@@ -6,7 +6,7 @@
         <aws-java-sdk.version>1.12.317</aws-java-sdk.version>
         <netty.version>4.1.108.Final</netty.version>
         <netty-reactive.version>2.0.6</netty-reactive.version>
-        <fasterxml-jackson.version>2.13.4.2</fasterxml-jackson.version>
+        <fasterxml-jackson.version>2.17.0</fasterxml-jackson.version>
         <logback.version>1.2.10</logback.version>
         <amazon-kinesis-client.version>2.4.4</amazon-kinesis-client.version>
         <gsr.version>1.1.12</gsr.version>
