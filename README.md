@@ -1,5 +1,6 @@
 # Amazon Kinesis Client Library for Go
-[![Integration test](https://github.com/arthurbailao/aws-kcl/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/arthurbailao/aws-kcl/actions/workflows/integration_test.yml)
+[![Unit Test](https://github.com/arthurbailao/aws-kcl/actions/workflows/test.yml/badge.svg)](https://github.com/arthurbailao/aws-kcl/actions/workflows/test.yml)
+[![Integration Test](https://github.com/arthurbailao/aws-kcl/actions/workflows/integration_test.yml/badge.svg?branch=main)](https://github.com/arthurbailao/aws-kcl/actions/workflows/integration_test.yml)
 
 This package provides an interface to the [Amazon Kinesis Client Library][amazon-kcl] (KCL) [MultiLangDaemon][multi-lang-daemon] for Golang.
 
