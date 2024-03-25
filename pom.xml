@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
-        <awssdk.version>2.17.290</awssdk.version>
-        <aws-java-sdk.version>1.12.317</aws-java-sdk.version>
+        <awssdk.version>2.25.3</awssdk.version>
+        <aws-java-sdk.version>1.12.668</aws-java-sdk.version>
         <netty.version>4.1.108.Final</netty.version>
         <netty-reactive.version>2.0.6</netty-reactive.version>
         <fasterxml-jackson.version>2.17.0</fasterxml-jackson.version>
-        <logback.version>1.2.13</logback.version>
-        <amazon-kinesis-client.version>2.4.4</amazon-kinesis-client.version>
-        <gsr.version>1.1.12</gsr.version>
+        <logback.version>1.3.14</logback.version>
+        <amazon-kinesis-client.version>2.5.7</amazon-kinesis-client.version>
+        <gsr.version>1.1.19</gsr.version>
     </properties>
     <dependencies>
         <dependency>
@@ -330,7 +330,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>2.15.1</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -353,4 +353,4 @@
             <version>3.2.2</version>
         </dependency>
     </dependencies>
-</project> 
+</project>
