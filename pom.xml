@@ -105,7 +105,7 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>endpoints-spi</artifactId>
+            <artifactId>identity-spi</artifactId>
             <version>${awssdk.version}</version>
         </dependency>
         <dependency>
